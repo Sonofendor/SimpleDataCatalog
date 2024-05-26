@@ -83,9 +83,9 @@ class TableField(Base):
 
     field_name = Column(String)
     table_name = Column(String, nullable=False)
-    database_schema_name = Column(String, ForeignKey('database_schemas.database_schema_name'), nullable=False)
+    database_schema_name = Column(String, nullable=False)
     database_name = Column(String,  nullable=False)
-    field_type_id = Column(Integer, nullable=False)
+    field_type_id = Column(Integer,  ForeignKey('table_field_types.field_type_id'), nullable=False)
     field_description = Column(String)
     created_at = Column(DateTime, default=func.now(), server_default=func.now())
     updated_at = Column(DateTime, default=func.now(), server_default=func.now(), onupdate=func.now())

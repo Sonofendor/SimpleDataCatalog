@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from config import app_config
 from config.types import database_types, field_types
-from config.tables import Base, DatabaseType, TableFieldType
+from tables import Base, DatabaseType, TableFieldType
 
 
 backend_db_conn = app_config.get('DATABASE', 'BACKEND_DB_CONN')

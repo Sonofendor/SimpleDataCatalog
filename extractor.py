@@ -1,22 +1,17 @@
-from sqlalchemy import create_engine, Engine, text
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 from config import app_config
-from config.tables import Database, DatabaseSchema, DatabaseTable, TableField
+from tables import Database, DatabaseSchema, DatabaseTable, TableField
 from config.sql import q_postgresql_get_all
 
 
 backend_db_conn = app_config.get('DATABASE', 'BACKEND_DB_CONN')
 
 
-def connect_to_backend_db():
-    return create_engine(backend_db_conn)
-
-
 class Extractor:
 
     def __init__(self, database_name):
-        self.__backend_engine = connect_to_backend_db()
-
+        self.__backend_engine = create_engine(backend_db_conn)
         session_maker = sessionmaker(bind=self.__backend_engine)
         session = session_maker()
         database = session.query(Database).filter_by(database_name=database_name).first()
@@ -80,17 +75,16 @@ class Extractor:
                     field_name=column_name, table_name=table_name,
                     database_schema_name=schema_name, database_name=self.__db_name
                 ).first()
-                if not field and (schema_name, table_name, column_name) not in added_fields:
-                    field = TableField(
-                        database_name=self.__db_name, database_schema_name=schema_name,
-                        table_name=table_name, field_name=column_name, field_type_id=field_type_id
-                    )
-                    backend_session.add(field)
-                    added_fields.append((schema_name, table_name, column_name))
+                if not field:
+                    if (schema_name, table_name, column_name) not in added_fields:
+                        field = TableField(
+                            database_name=self.__db_name, database_schema_name=schema_name,
+                            table_name=table_name, field_name=column_name, field_type_id=field_type_id
+                        )
+                        backend_session.add(field)
+                        added_fields.append((schema_name, table_name, column_name))
+                elif field.field_type_id != field_type_id:
+                    field.field_type_id = field_type_id
 
         backend_session.commit()
         backend_session.close()
-
-
-extractor = Extractor('dit_dwh')
-extractor.extract_and_add_to_backend()

@@ -1,3 +1,7 @@
 .idea/
 .venv/
+.venv_test/
 devdb/
+__pycache__/
+**/__pycache__/
+.env
