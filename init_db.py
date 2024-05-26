@@ -1,21 +1,14 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from configparser import ConfigParser
+from config import app_config
 from config.types import database_types, field_types
 from config.tables import Base, DatabaseType, TableFieldType
 
 
-config = ConfigParser()
-config.read('sdc.conf')
-backend_db_conn = config.get('DATABASE', 'BACKEND_DB_CONN')
-
-
+backend_db_conn = app_config.get('DATABASE', 'BACKEND_DB_CONN')
 engine = create_engine(backend_db_conn, echo=True)
-
-
 Base.metadata.drop_all(engine)
 Base.metadata.create_all(engine)
-
 Session = sessionmaker(bind=engine)
 session = Session()
 

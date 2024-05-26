@@ -1,13 +1,11 @@
 from sqlalchemy import create_engine, Engine, text
 from sqlalchemy.orm import sessionmaker
-from configparser import ConfigParser
+from config import app_config
 from config.tables import Database, DatabaseSchema, DatabaseTable, TableField
 from config.sql import q_postgresql_get_all
 
 
-config = ConfigParser()
-config.read('sdc.conf')
-backend_db_conn = config.get('DATABASE', 'BACKEND_DB_CONN')
+backend_db_conn = app_config.get('DATABASE', 'BACKEND_DB_CONN')
 
 
 def connect_to_backend_db():
