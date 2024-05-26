@@ -38,3 +38,13 @@ class TableFieldModel(BaseModel):
     field_description: Optional[str]
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+class TableFieldModelFullType(BaseModel):
+    field_name: str
+    table_name: str
+    database_schema_name: str
+    database_name: str
+    field_type: str
+    field_description: Optional[str]
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)

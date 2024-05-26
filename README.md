@@ -1,4 +1,4 @@
-# SimpleDataCatalog
+# Simple Data Catalog
 
 **Simple Data Catalog (SDC)** is a solution for keeping track of your data in a simple non-sophisticated way. 
 While other Data Catalog solutions are more feature-rich, they require way more complexity in the setup.

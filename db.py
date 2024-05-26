@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from config import app_config
-from tables import Database, DatabaseSchema, DatabaseTable, TableField
+from tables import Database, DatabaseSchema, DatabaseTable, TableField, TableFieldType
 from models import DBModel, DBSchemaModel, DBTableModel, TableFieldModel
 from pydantic import parse_obj_as
 from typing import List
@@ -35,32 +35,36 @@ class BackendDBHook:
 
     @__session_decorator
     def get_all_database_schemas(self, session, database_name: str):
-        return session.query(DatabaseSchema).filter_by(database_name=database_name).all()
+        return [schema.__dict__ for schema in session.query(DatabaseSchema).filter_by(database_name=database_name).all()]
 
     @__session_decorator
     def get_database_schema(self, session, database_name: str, schema_name: str):
         return session.query(DatabaseSchema).filter_by(database_name=database_name,
-                                                       database_schema_name=schema_name).first()
+                                                       database_schema_name=schema_name).first().__dict__
 
     @__session_decorator
     def get_all_schema_tables(self, session, database_name: str, schema_name: str):
-        return session.query(DatabaseTable).filter_by(database_name=database_name,
-                                                      database_schema_name=schema_name).all()
+        return [table.__dict__ for table in session.query(DatabaseTable).filter_by(database_name=database_name,
+                                                      database_schema_name=schema_name).all()]
 
     @__session_decorator
     def get_schema_table(self, session, database_name: str, schema_name: str, table_name: str):
         return session.query(DatabaseTable).filter_by(database_name=database_name, database_schema_name=schema_name,
-                                                      table_name=table_name).first()
+                                                      table_name=table_name).first().__dict__
 
     @__session_decorator
     def get_all_table_fields(self, session, database_name: str, schema_name: str, table_name: str):
-        return session.query(TableField).filter_by(database_name=database_name, database_schema_name=schema_name,
-                                                   table_name=table_name).all()
+        return [field.__dict__ for field in session.query(TableField).filter_by(database_name=database_name, database_schema_name=schema_name,
+                                                   table_name=table_name).all()]
 
     @__session_decorator
     def get_table_field(self, session, database_name: str, schema_name: str, table_name: str, field_name: str):
         return session.query(TableField).filter_by(database_name=database_name, database_schema_name=schema_name,
-                                                   table_name=table_name, field_name=field_name).first()
+                                                   table_name=table_name, field_name=field_name).first().__dict__
+
+    @__session_decorator
+    def get_field_type(self, session, field_type_id: int):
+        return session.query(TableFieldType).filter_by(field_type_id=field_type_id).first().__dict__
 
     @__session_decorator
     def add_database(self, session, database: DBModel):

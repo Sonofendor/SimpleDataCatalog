@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalog - {{ table_name }}</title>
+</head>
+<body>
+    <h1>Table Details - {{ table_name }}</h1>
+
+    <h2>Table Properties</h2>
+    <form id="editForm" method="POST" action="/catalog/{{ table.database_name }}/{{ table.database_schema_name }}/{{ table.table_name }}">
+        <label for="database_name">Database Name:</label>
+        <input type="text" id="database_name" name="database_name" value="{{ table.database_name }}" required><br><br>
+
+        <label for="schema_name">Schema Name:</label>
+        <input type="text" id="schema_name" name="schema_name" value="{{ table.database_schema_name }}" required><br><br>
+
+        <label for="table_name">Table Name:</label>
+        <input type="text" id="table_name" name="table_name" value="{{ table.table_name }}" required><br><br>
+
+        <label for="table_description">Table Description:</label><br>
+        <textarea id="table_description" name="table_description" rows="4" cols="50">{{ table.table_description }}</textarea><br><br>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <h2>Table Fields</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Field Name</th>
+                <th>Field Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for field in fields %}
+            <tr>
+                <td><a href="/catalog/{{ field.database_name }}/{{ field.database_schema_name }}/{{ field.table_name }}/{{ field.field_name }}">{{ field.field_name }}</a></td>
+                <td>{{ field.field_description }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

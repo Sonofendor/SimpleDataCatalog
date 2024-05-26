@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalog - {{ database_name }}</title>
+</head>
+<body>
+    <h1>Database Details - {{ database_name }}</h1>
+
+    <h2>Database Properties</h2>
+    <form id="editForm" method="POST" action="/catalog/{{ database_name }}">
+        <label for="database_name">Database Name:</label>
+        <input type="text" id="database_name" name="database_name" value="{{ database.database_name }}" required><br><br>
+
+        <label for="database_type">Database Type:</label>
+        <input type="text" id="database_type" name="database_type" value="{{ database.database_type }}" required><br><br>
+
+        <label for="database_url">Database URL:</label>
+        <input type="text" id="database_url" name="database_url" value="{{ database.database_url }}" required><br><br>
+
+        <label for="database_description">Database Description:</label><br>
+        <textarea id="database_description" name="database_description" rows="4" cols="50">{{ database.database_description }}</textarea><br><br>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <h2>Database Schemas</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Schema Name</th>
+                <th>Schema Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for schema in schemas %}
+            <tr>
+                <td><a href="/catalog/{{ schema.database_name }}/{{ schema.database_schema_name }}">{{ schema.database_schema_name }}</a></td>
+                <td>{{ schema.database_schema_description }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
