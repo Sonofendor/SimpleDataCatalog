@@ -8,7 +8,7 @@ While other Data Catalog solutions are more feature-rich, they require way more 
 
 ## Database Support
 ### Backend
-Tested on latest versions available as Docker containers for PostgreSQL and MySQL. 
+Tested on latest versions available as Docker containers for PostgreSQL. 
 During development SQLite is used, which is also an option for simplified deployments.
 
 ### Sources

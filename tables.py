@@ -4,6 +4,7 @@ from sqlalchemy import (
     func
 )
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 
 
 Base = declarative_base()
@@ -29,13 +30,14 @@ class Database(Base):
     __table_args__ = (
         CheckConstraint("database_name NOT LIKE '% %'", name='no_spaces_in_database_name'),
     )
+    schemas = relationship("DatabaseSchema", back_populates="database", cascade="all, delete-orphan")
 
 
 class DatabaseSchema(Base):
     __tablename__ = 'database_schemas'
 
     database_schema_name = Column(String)
-    database_name = Column(String, ForeignKey('databases.database_name'), nullable=False)
+    database_name = Column(String, ForeignKey('databases.database_name', ondelete='CASCADE'), nullable=False)
     database_schema_description = Column(String)
     created_at = Column(DateTime, default=func.now(), server_default=func.now())
     updated_at = Column(DateTime, default=func.now(), server_default=func.now(), onupdate=func.now())
@@ -44,6 +46,8 @@ class DatabaseSchema(Base):
         PrimaryKeyConstraint('database_schema_name', 'database_name'),
         CheckConstraint("database_schema_name NOT LIKE '% %'", name='no_spaces_in_database_name'),
     )
+    database = relationship("Database", back_populates="schemas")
+    tables = relationship("DatabaseTable", back_populates="schema", cascade="all, delete-orphan")
 
 
 class DatabaseTable(Base):
@@ -59,10 +63,14 @@ class DatabaseTable(Base):
     __table_args__ = (
         PrimaryKeyConstraint('table_name', 'database_schema_name', 'database_name'),
         ForeignKeyConstraint(['database_schema_name', 'database_name'],
-                             ['database_schemas.database_schema_name', 'database_schemas.database_name']),
+                             ['database_schemas.database_schema_name', 'database_schemas.database_name'],
+                             ondelete='CASCADE'
+                             ),
         CheckConstraint("table_name NOT LIKE '% %'", name='no_spaces_in_table_name'),
         CheckConstraint("database_schema_name NOT LIKE '% %'", name='no_spaces_in_database_schema_name'),
     )
+    schema = relationship("DatabaseSchema", back_populates="tables")
+    fields = relationship("TableField", back_populates="table", cascade="all, delete-orphan")
 
 
 class TableFieldType(Base):
@@ -94,8 +102,10 @@ class TableField(Base):
         PrimaryKeyConstraint('field_name', 'table_name', 'database_schema_name', 'database_name'),
         ForeignKeyConstraint(
             ['table_name', 'database_schema_name', 'database_name'],
-            ['database_tables.table_name', 'database_tables.database_schema_name', 'database_tables.database_name']
+            ['database_tables.table_name', 'database_tables.database_schema_name', 'database_tables.database_name'],
+            ondelete='CASCADE'
         ),
         CheckConstraint("table_name NOT LIKE '% %'", name='no_spaces_in_table_name'),
         CheckConstraint("field_name NOT LIKE '% %'", name='no_spaces_in_field_name'),
     )
+    table = relationship("DatabaseTable", back_populates="fields")

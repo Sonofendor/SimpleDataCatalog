@@ -1,6 +1,7 @@
 
 database_types = {
     'postgresql': 'PostgreSQL',
+    'mysql': 'MySQL',
 }
 
 field_types = {
