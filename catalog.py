@@ -8,7 +8,6 @@ router = APIRouter(prefix="/catalog")
 backend_db_hook = BackendDBHook()
 templates = Jinja2Templates(directory="templates")
 
-
 def mask_database_url(url: str) -> str:
     protocol, uri = url.split('//')
     credentials, rest = uri.split('@')
@@ -22,6 +21,8 @@ def mask_database_url(url: str) -> str:
 def get_catalog(request: Request):
     hook = BackendDBHook()
     databases = hook.get_all_databases()
+    for database in databases:
+        database['masked_database_url'] = mask_database_url(database['database_url'])
     return templates.TemplateResponse("catalog.html", {"request": request, "databases": databases})
 
 

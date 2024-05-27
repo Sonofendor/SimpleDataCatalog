@@ -1,55 +1,56 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catalog - {{ database_name }}</title>
-</head>
-<body>
-    <h1>Database Details - {{ database_name }}</h1>
+{% extends "base.html" %}
 
-    <h2>Database Properties</h2>
-    <form id="editForm" method="POST" action="/catalog/{{ database_name }}">
-        <label for="database_name">Database Name:</label>
-        <span id="database_name">{{ database.database_name }}</span><br><br>
+{% block title %}Simple Data Catalog - {{ database_name }}{% endblock %}
 
-        <label for="database_type_name">Database Type:</label>
-        <span id="database_type_name">{{ database.database_type_name }}</span><br><br>
+{% block content %}
+    <h1 class="font-mono text-3xl font-bold mb-4 text-center">Database Details - {{ database_name }}</h1>
 
-        <label for="database_masked_url">Database URL:</label>
-        <span id="database_masked_url">{{ database.masked_database_url }}</span><br><br>
-
-        <label for="database_description">Database Description:</label><br><br>
-        <textarea id="database_description" name="database_description" rows="4" cols="50">{{ database.database_description }}</textarea><br><br>
-
-        <input type="hidden" id="database_type" name="database_type" value="{{ database.database_type }}">
-        <input type="hidden" id="database_url" name="database_url" value="{{ database.database_url }}">
-
-        <button type="submit">Submit</button>
+    <form id="deleteForm" method="POST" action="/catalog/{{ database.database_name }}/delete" onsubmit="return confirm('Are you sure you want to delete this database?');">
+        <div class="flex flex-col items-center">
+        <button type="submit" class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Delete Database</button>
+        </div>
     </form>
 
     <br>
 
-    <form id="deleteForm" method="POST" action="/catalog/{{ database.database_name }}/delete" onsubmit="return confirm('Are you sure you want to delete this database?');">
-        <button type="submit">Delete Database</button>
+    <h2 class="font-mono text-2xl font-bold mb-4 text-center">Database Properties</h2>
+    <form id="editForm" class="max-w-sm mx-auto" method="POST" action="/catalog/{{ database_name }}">
+        <label for="database_name" class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Database Name:</label>
+        <span id="database_name">{{ database.database_name }}</span><br><br>
+
+        <label for="database_type_name" class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Database Type:</label>
+        <span id="database_type_name">{{ database.database_type_name }}</span><br><br>
+
+        <label for="database_masked_url" class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Database URL:</label>
+        <span id="database_masked_url">{{ database.masked_database_url }}</span><br><br>
+
+        <label for="database_description" class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Database Description:</label>
+        <textarea id="database_description" name="database_description" class="block w-full mb-0 p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">{{ database.database_description }}</textarea><br>
+
+        <input type="hidden" id="database_type" name="database_type" value="{{ database.database_type }}">
+        <input type="hidden" id="database_url" name="database_url" value="{{ database.database_url }}">
+        <div class="flex flex-col w-full items-center">
+        <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
+        </div>
     </form>
 
-    <h2>Database Schemas</h2>
-    <table border="1">
-        <thead>
+    <br>
+
+    <h2 class="font-mono text-2xl font-bold mb-4 text-center">Database Schemas</h2>
+    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400" border="1">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-                <th>Schema Name</th>
-                <th>Schema Description</th>
+                <th scope="col" class="px-6 py-3">Schema Name</th>
+                <th scope="col" class="px-6 py-3">Schema Description</th>
             </tr>
         </thead>
         <tbody>
             {% for schema in schemas %}
-            <tr>
-                <td><a href="/catalog/{{ schema.database_name }}/{{ schema.database_schema_name }}">{{ schema.database_schema_name }}</a></td>
-                <td>{{ schema.database_schema_description }}</td>
+            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                <td scope="row" class="px-6 py-4 font-medium text-blue-300 whitespace-nowrap dark:text-white"><a href="/catalog/{{ schema.database_name }}/{{ schema.database_schema_name }}">{{ schema.database_schema_name }}</a></td>
+                <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ schema.database_schema_description }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-</body>
-</html>
+{% endblock %}

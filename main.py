@@ -15,6 +15,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 def redirect_to_catalog(request: Request):
     return RedirectResponse(url=f"/catalog/", status_code=303)
 
+
 @app.exception_handler(404)
 async def custom_404_handler(request, __):
     return templates.TemplateResponse("404.html", {"request": request})
