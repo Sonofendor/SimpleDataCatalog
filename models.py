@@ -12,6 +12,15 @@ class DBModel(BaseModel):
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
 
+class DBModelFullType(BaseModel):
+    database_name: str
+    database_type_name: str
+    database_url: str
+    database_description: Optional[str]
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
 class DBSchemaModel(BaseModel):
     database_schema_name: str
     database_name: str

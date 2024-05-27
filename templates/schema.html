@@ -11,15 +11,21 @@
     <h2>Schema Properties</h2>
     <form id="editForm" method="POST" action="/catalog/{{ schema.database_name }}/{{ schema.database_schema_name }}">
         <label for="database_name">Database Name:</label>
-        <input type="text" id="database_name" name="database_name" value="{{ schema.database_name }}" required><br><br>
+        <span id="database_type_name"><a href="/catalog/{{ schema.database_name }}">{{ schema.database_name }}</a></span><br><br>
 
         <label for="schema_name">Schema Name:</label>
-        <input type="text" id="schema_name" name="schema_name" value="{{ schema.database_schema_name }}" required><br><br>
+        <span id="schema_name">{{ schema.database_schema_name }}</span><br><br>
 
-        <label for="database_schema_description">Schema Description:</label><br>
+        <label for="database_schema_description">Schema Description:</label><br><br>
         <textarea id="database_schema_description" name="database_schema_description" rows="4" cols="50">{{ schema.database_schema_description }}</textarea><br><br>
 
         <button type="submit">Submit</button>
+    </form>
+
+    <br>
+
+    <form id="deleteForm" method="POST" action="/catalog/{{ schema.database_name }}/{{ schema.database_schema_name }}/delete" onsubmit="return confirm('Are you sure you want to delete this schema?');">
+        <button type="submit">Delete Schema</button>
     </form>
 
     <h2>Schema Tables</h2>

@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from config import app_config
-from tables import Database, DatabaseSchema, DatabaseTable, TableField, TableFieldType
+from tables import Database, DatabaseSchema, DatabaseTable, TableField, TableFieldType, DatabaseType
 from models import DBModel, DBSchemaModel, DBTableModel, TableFieldModel
 from pydantic import parse_obj_as
 from typing import List
@@ -31,7 +31,8 @@ class BackendDBHook:
 
     @__session_decorator
     def get_database(self, session, database_name: str) -> DBModel:
-        return session.query(Database).filter_by(database_name=database_name).first().__dict__
+        result = session.query(Database).filter_by(database_name=database_name).first()
+        return result.__dict__ if result else None
 
     @__session_decorator
     def get_all_database_schemas(self, session, database_name: str):
@@ -39,8 +40,9 @@ class BackendDBHook:
 
     @__session_decorator
     def get_database_schema(self, session, database_name: str, schema_name: str):
-        return session.query(DatabaseSchema).filter_by(database_name=database_name,
-                                                       database_schema_name=schema_name).first().__dict__
+        result = session.query(DatabaseSchema).filter_by(database_name=database_name,
+                                                       database_schema_name=schema_name).first()
+        return result.__dict__ if result else None
 
     @__session_decorator
     def get_all_schema_tables(self, session, database_name: str, schema_name: str):
@@ -49,8 +51,9 @@ class BackendDBHook:
 
     @__session_decorator
     def get_schema_table(self, session, database_name: str, schema_name: str, table_name: str):
-        return session.query(DatabaseTable).filter_by(database_name=database_name, database_schema_name=schema_name,
-                                                      table_name=table_name).first().__dict__
+        result = session.query(DatabaseTable).filter_by(database_name=database_name, database_schema_name=schema_name,
+                                                      table_name=table_name).first()
+        return result.__dict__ if result else None
 
     @__session_decorator
     def get_all_table_fields(self, session, database_name: str, schema_name: str, table_name: str):
@@ -59,12 +62,33 @@ class BackendDBHook:
 
     @__session_decorator
     def get_table_field(self, session, database_name: str, schema_name: str, table_name: str, field_name: str):
-        return session.query(TableField).filter_by(database_name=database_name, database_schema_name=schema_name,
-                                                   table_name=table_name, field_name=field_name).first().__dict__
+        result = session.query(TableField).filter_by(database_name=database_name, database_schema_name=schema_name,
+                                                   table_name=table_name, field_name=field_name).first()
+        return result.__dict__ if result else None
+
+    @__session_decorator
+    def get_available_database_types(self, session):
+        return [db_type.__dict__ for db_type in session.query(DatabaseType).all()]
+
+    @__session_decorator
+    def get_database_type(self, session, database_type: str):
+        result = session.query(DatabaseType).filter_by(database_type=database_type).first()
+        return result.__dict__ if result else None
+
+    @__session_decorator
+    def get_available_field_types(self, session, database_name: str):
+        database = session.query(Database).filter_by(database_name=database_name).first().__dict__
+        return [field_type.__dict__ for field_type in session.query(TableFieldType).filter_by(database_type=database.database_type).all()]
 
     @__session_decorator
     def get_field_type(self, session, field_type_id: int):
-        return session.query(TableFieldType).filter_by(field_type_id=field_type_id).first().__dict__
+        result = session.query(TableFieldType).filter_by(field_type_id=field_type_id).first()
+        return result.__dict__ if result else None
+
+    @__session_decorator
+    def get_field_type_by_name(self, session, database_type: str, type_name: int):
+        result = session.query(TableFieldType).filter_by(database_type=database_type, type_name=type_name).first()
+        return result.__dict__ if result else None
 
     @__session_decorator
     def add_database(self, session, database: DBModel):

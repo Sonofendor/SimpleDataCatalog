@@ -4,7 +4,7 @@
 While other Data Catalog solutions are more feature-rich, they require way more complexity in the setup.
 
 ## Current version
-0.0, everything WIP
+Pre-alpha
 
 ## Database Support
 ### Backend

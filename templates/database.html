@@ -11,18 +11,27 @@
     <h2>Database Properties</h2>
     <form id="editForm" method="POST" action="/catalog/{{ database_name }}">
         <label for="database_name">Database Name:</label>
-        <input type="text" id="database_name" name="database_name" value="{{ database.database_name }}" required><br><br>
+        <span id="database_name">{{ database.database_name }}</span><br><br>
 
-        <label for="database_type">Database Type:</label>
-        <input type="text" id="database_type" name="database_type" value="{{ database.database_type }}" required><br><br>
+        <label for="database_type_name">Database Type:</label>
+        <span id="database_type_name">{{ database.database_type_name }}</span><br><br>
 
-        <label for="database_url">Database URL:</label>
-        <input type="text" id="database_url" name="database_url" value="{{ database.database_url }}" required><br><br>
+        <label for="database_masked_url">Database URL:</label>
+        <span id="database_masked_url">{{ database.masked_database_url }}</span><br><br>
 
-        <label for="database_description">Database Description:</label><br>
+        <label for="database_description">Database Description:</label><br><br>
         <textarea id="database_description" name="database_description" rows="4" cols="50">{{ database.database_description }}</textarea><br><br>
 
+        <input type="hidden" id="database_type" name="database_type" value="{{ database.database_type }}">
+        <input type="hidden" id="database_url" name="database_url" value="{{ database.database_url }}">
+
         <button type="submit">Submit</button>
+    </form>
+
+    <br>
+
+    <form id="deleteForm" method="POST" action="/catalog/{{ database.database_name }}/delete" onsubmit="return confirm('Are you sure you want to delete this database?');">
+        <button type="submit">Delete Database</button>
     </form>
 
     <h2>Database Schemas</h2>
