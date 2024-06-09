@@ -1,7 +1,7 @@
 from sqlalchemy import (
     Column, String, Integer, DateTime, ForeignKey,
     CheckConstraint, UniqueConstraint, PrimaryKeyConstraint, ForeignKeyConstraint,
-    func
+    func, Boolean
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -39,8 +39,10 @@ class DatabaseSchema(Base):
     database_schema_name = Column(String)
     database_name = Column(String, ForeignKey('databases.database_name', ondelete='CASCADE'), nullable=False)
     database_schema_description = Column(String)
+    deleted = Column(Boolean, default=False)
     created_at = Column(DateTime, default=func.now(), server_default=func.now())
     updated_at = Column(DateTime, default=func.now(), server_default=func.now(), onupdate=func.now())
+    deleted_at = Column(DateTime, nullable=True)
 
     __table_args__ = (
         PrimaryKeyConstraint('database_schema_name', 'database_name'),
@@ -57,8 +59,10 @@ class DatabaseTable(Base):
     database_schema_name = Column(String, nullable=False)
     database_name = Column(String, nullable=False)
     table_description = Column(String)
+    deleted = Column(Boolean, default=False)
     created_at = Column(DateTime, default=func.now(), server_default=func.now())
     updated_at = Column(DateTime, default=func.now(), server_default=func.now(), onupdate=func.now())
+    deleted_at = Column(DateTime, nullable=True)
 
     __table_args__ = (
         PrimaryKeyConstraint('table_name', 'database_schema_name', 'database_name'),
@@ -95,8 +99,10 @@ class TableField(Base):
     database_name = Column(String,  nullable=False)
     field_type_id = Column(Integer,  ForeignKey('table_field_types.field_type_id'), nullable=False)
     field_description = Column(String)
+    deleted = Column(Boolean, default=False)
     created_at = Column(DateTime, default=func.now(), server_default=func.now())
     updated_at = Column(DateTime, default=func.now(), server_default=func.now(), onupdate=func.now())
+    deleted_at = Column(DateTime, nullable=True)
 
     __table_args__ = (
         PrimaryKeyConstraint('field_name', 'table_name', 'database_schema_name', 'database_name'),

@@ -8,7 +8,10 @@ SELECT
 FROM 
     information_schema.columns
 WHERE
-	table_schema NOT IN ('information_schema', 'pg_catalog')
+    table_schema NOT IN ('information_schema', 'pg_catalog')
+    AND concat_ws('.', table_schema, table_name)::regclass not in (
+        SELECT inhrelid::regclass FROM pg_catalog.pg_inherits
+    )
 ORDER BY 
     table_schema,
     table_name,

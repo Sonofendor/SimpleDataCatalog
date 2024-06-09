@@ -8,11 +8,12 @@ router = APIRouter(prefix="/catalog")
 backend_db_hook = BackendDBHook()
 templates = Jinja2Templates(directory="templates")
 
+
 def mask_database_url(url: str) -> str:
     protocol, uri = url.split('//')
     credentials, rest = uri.split('@')
     login, password = credentials.split(':')
-    masked_password = '*' * len(password)
+    masked_password = '*' * 5
     masked_url = f"{protocol}//{login}:{masked_password}@{rest}"
     return masked_url
 
@@ -79,7 +80,7 @@ async def get_database_schema_details(request: Request, database_name: str, sche
 
 @router.post("/{database_name}/{schema_name}/delete")
 async def delete_database_schema(database_name: str, schema_name: str):
-    backend_db_hook.delete_database_schema(database_name, schema_name)
+    backend_db_hook.archive_database_schema(database_name, schema_name)
     return RedirectResponse(url=f"/catalog/{database_name}", status_code=303)
 
 
@@ -111,7 +112,7 @@ async def get_database_table_details(request: Request, database_name: str, schem
 
 @router.post("/{database_name}/{schema_name}/{table_name}/delete")
 async def delete_database_table(database_name: str, schema_name: str, table_name: str):
-    backend_db_hook.delete_schema_table(database_name, schema_name, table_name)
+    backend_db_hook.archive_schema_table(database_name, schema_name, table_name)
     return RedirectResponse(url=f"/catalog/{database_name}/{schema_name}", status_code=303)
 
 
@@ -143,8 +144,8 @@ async def get_table_field_details(request: Request, database_name: str, schema_n
 
 
 @router.post("/{database_name}/{schema_name}/{table_name}/{field_name}/delete")
-async def delete_database_table(database_name: str, schema_name: str, table_name: str, field_name: str):
-    backend_db_hook.delete_table_field(database_name, schema_name, table_name, field_name)
+async def delete_table_field(database_name: str, schema_name: str, table_name: str, field_name: str):
+    backend_db_hook.archive_table_field(database_name, schema_name, table_name, field_name)
     return RedirectResponse(url=f"/catalog/{database_name}/{schema_name}/{table_name}", status_code=303)
 
 

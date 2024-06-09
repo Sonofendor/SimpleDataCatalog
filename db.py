@@ -1,11 +1,10 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
 from config import app_config
 from tables import Database, DatabaseSchema, DatabaseTable, TableField, TableFieldType, DatabaseType
 from models import DBModel, DBSchemaModel, DBTableModel, TableFieldModel
 from pydantic import parse_obj_as
 from typing import List
-
 
 backend_db_conn = app_config.get('DATABASE', 'BACKEND_DB_CONN')
 
@@ -23,6 +22,7 @@ class BackendDBHook:
             session.commit()
             session.close()
             return result
+
         return wrapper
 
     @__session_decorator
@@ -35,35 +35,39 @@ class BackendDBHook:
         return result.__dict__ if result else None
 
     @__session_decorator
-    def get_all_database_schemas(self, session, database_name: str):
-        return [schema.__dict__ for schema in session.query(DatabaseSchema).filter_by(database_name=database_name).all()]
+    def get_all_database_schemas(self, session, database_name: str, include_deleted: bool = False):
+        return [schema.__dict__ for schema in
+                session.query(DatabaseSchema).filter_by(database_name=database_name, deleted=include_deleted).all()]
 
     @__session_decorator
     def get_database_schema(self, session, database_name: str, schema_name: str):
         result = session.query(DatabaseSchema).filter_by(database_name=database_name,
-                                                       database_schema_name=schema_name).first()
+                                                         database_schema_name=schema_name).first()
         return result.__dict__ if result else None
 
     @__session_decorator
-    def get_all_schema_tables(self, session, database_name: str, schema_name: str):
+    def get_all_schema_tables(self, session, database_name: str, schema_name: str, include_deleted: bool = False):
         return [table.__dict__ for table in session.query(DatabaseTable).filter_by(database_name=database_name,
-                                                      database_schema_name=schema_name).all()]
+                                                                                   database_schema_name=schema_name,
+                                                                                   deleted=include_deleted).all()]
 
     @__session_decorator
     def get_schema_table(self, session, database_name: str, schema_name: str, table_name: str):
         result = session.query(DatabaseTable).filter_by(database_name=database_name, database_schema_name=schema_name,
-                                                      table_name=table_name).first()
+                                                        table_name=table_name).first()
         return result.__dict__ if result else None
 
     @__session_decorator
-    def get_all_table_fields(self, session, database_name: str, schema_name: str, table_name: str):
-        return [field.__dict__ for field in session.query(TableField).filter_by(database_name=database_name, database_schema_name=schema_name,
-                                                   table_name=table_name).all()]
+    def get_all_table_fields(self, session, database_name: str, schema_name: str, table_name: str,
+                             include_deleted: bool = False):
+        return [field.__dict__ for field in
+                session.query(TableField).filter_by(database_name=database_name, database_schema_name=schema_name,
+                                                    table_name=table_name, deleted=include_deleted).all()]
 
     @__session_decorator
     def get_table_field(self, session, database_name: str, schema_name: str, table_name: str, field_name: str):
         result = session.query(TableField).filter_by(database_name=database_name, database_schema_name=schema_name,
-                                                   table_name=table_name, field_name=field_name).first()
+                                                     table_name=table_name, field_name=field_name).first()
         return result.__dict__ if result else None
 
     @__session_decorator
@@ -78,7 +82,8 @@ class BackendDBHook:
     @__session_decorator
     def get_available_field_types(self, session, database_name: str):
         database = session.query(Database).filter_by(database_name=database_name).first().__dict__
-        return [field_type.__dict__ for field_type in session.query(TableFieldType).filter_by(database_type=database.database_type).all()]
+        return [field_type.__dict__ for field_type in
+                session.query(TableFieldType).filter_by(database_type=database.database_type).all()]
 
     @__session_decorator
     def get_field_type(self, session, field_type_id: int):
@@ -183,3 +188,30 @@ class BackendDBHook:
                                             table_name=table_name, field_name=field_name).delete()
         session.commit()
 
+    @__session_decorator
+    def archive_database_schema(self, session, database_name: str, schema_name: str):
+        schema = session.query(DatabaseSchema).filter_by(database_name=database_name,
+                                                         database_schema_name=schema_name).first()
+        if schema:
+            schema.deleted = True
+            schema.deleted_at = func.now()
+            session.commit()
+
+    @__session_decorator
+    def archive_schema_table(self, session, database_name: str, schema_name: str, table_name: str):
+        table = session.query(DatabaseTable).filter_by(database_name=database_name,
+                                                       database_schema_name=schema_name,
+                                                       table_name=table_name).first()
+        if table:
+            table.deleted = True
+            table.deleted_at = func.now()
+            session.commit()
+
+    @__session_decorator
+    def archive_table_field(self, session, database_name: str, schema_name: str, table_name: str, field_name: str):
+        field = session.query(TableField).filter_by(database_name=database_name, database_schema_name=schema_name,
+                                                    table_name=table_name, field_name=field_name).first()
+        if field:
+            field.deleted = True
+            field.deleted_at = func.now()
+            session.commit()

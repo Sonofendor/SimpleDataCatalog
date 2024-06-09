@@ -25,8 +25,10 @@ class DBSchemaModel(BaseModel):
     database_schema_name: str
     database_name: str
     database_schema_description: Optional[str]
+    deleted: bool
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
+    deleted_at: datetime
 
 
 class DBTableModel(BaseModel):
@@ -34,8 +36,10 @@ class DBTableModel(BaseModel):
     database_schema_name: str
     database_name: str
     table_description: Optional[str]
+    deleted: bool
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
+    deleted_at: datetime
 
 
 class TableFieldModel(BaseModel):
@@ -45,8 +49,11 @@ class TableFieldModel(BaseModel):
     database_name: str
     field_type_id: int
     field_description: Optional[str]
+    deleted: bool
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
+    deleted_at: datetime
+
 
 class TableFieldModelFullType(BaseModel):
     field_name: str
@@ -55,5 +62,7 @@ class TableFieldModelFullType(BaseModel):
     database_name: str
     field_type: str
     field_description: Optional[str]
+    deleted: bool
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
+    deleted_at: datetime

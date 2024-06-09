@@ -5,28 +5,33 @@
 {% block content %}
     <h1 class="font-mono text-3xl font-bold mb-4 text-center">Table Details - {{ table.table_name }}</h1>
 
-    <h2 class="font-mono text-2xl font-bold mb-4 text-center">Table Properties</h2>
-    <form id="editForm" method="POST" action="/catalog/{{ table.database_name }}/{{ table.database_schema_name }}/{{ table.table_name }}">
-        <label for="database_name">Database Name:</label>
-        <span id="database_name"><a href="/catalog/{{ table.database_name }}">{{ table.database_name }}</a></span><br><br>
-
-        <label for="schema_name">Schema Name:</label>
-        <span id="schema_name"><a href="/catalog/{{ table.database_name }}/{{ table.database_schema_name }}">{{ table.database_schema_name }}</a></span><br><br>
-
-        <label for="table_name">Table Name:</label>
-        <span id="table_name">{{ table.table_name }}</span><br><br>
-
-        <label for="table_description">Table Description:</label><br><br>
-        <textarea id="table_description" name="table_description" rows="4" cols="50">{{ table.table_description }}</textarea><br><br>
-
-        <button type="submit">Submit</button>
+    <form id="deleteForm" method="POST" action="/catalog/{{ table.database_name }}/{{ table.database_schema_name }}/{{ table.table_name }}/delete" onsubmit="return confirm('Are you sure you want to delete this table?');">
+        <div class="flex flex-col items-center">
+        <button type="submit" class="text-white bg-red-500 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">Delete Table</button>
+        </div>
     </form>
 
     <br>
 
-    <form id="deleteForm" method="POST" action="/catalog/{{ table.database_name }}/{{ table.database_schema_name }}/{{ table.table_name }}/delete" onsubmit="return confirm('Are you sure you want to delete this table?');">
-        <button type="submit">Delete Table</button>
+    <h2 class="font-mono text-2xl font-bold mb-4 text-center">Table Properties</h2>
+    <form id="editForm" class="max-w-sm mx-auto" method="POST" action="/catalog/{{ table.database_name }}/{{ table.database_schema_name }}/{{ table.table_name }}">
+        <label for="database_name" class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Database Name:</label>
+        <span id="database_name"><a href="/catalog/{{ table.database_name }}">{{ table.database_name }}</a></span><br><br>
+
+        <label for="schema_name" class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Schema Name:</label>
+        <span id="schema_name"><a href="/catalog/{{ table.database_name }}/{{ table.database_schema_name }}">{{ table.database_schema_name }}</a></span><br><br>
+
+        <label for="table_name" class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Table Name:</label>
+        <span id="table_name">{{ table.table_name }}</span><br><br>
+
+        <label for="table_description" class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Table Description:</label>
+        <textarea id="table_description" name="table_description" rows="4" cols="50">{{ table.table_description }}</textarea><br><br>
+        <div class="flex flex-col w-full items-center">
+        <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Update Table</button>
+        </div>
     </form>
+
+    <br>
 
     <h2 class="font-mono text-2xl font-bold mb-4 text-center">Table Fields</h2>
     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400" border="1">
